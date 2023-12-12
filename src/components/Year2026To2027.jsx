@@ -52,7 +52,7 @@ const Year2026To2027 = () => {
   };
 
   // Debounced verzija funkcije za spremanje
-  const debouncedSave = debounce(saveToLocalStorage, 1000);
+  const debouncedSave = debounce(saveToLocalStorage, 300);
 
   // Handler za promjene teksta koji koristi debounce
   const handleTextChange = (setterFunction, localStorageKey) => (event) => {

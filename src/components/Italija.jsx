@@ -37,7 +37,7 @@ const Italija = () => {
   // Debounced verzija funkcije za spremanje
   const debouncedSave = debounce((localStorageKey, value) => {
     localStorage.setItem(localStorageKey, value);
-  }, 1000);
+  }, 300);
 
   const handlePodatciChange = (event) => {
     const newText = event.target.value;

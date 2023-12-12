@@ -36,7 +36,7 @@ const Year2023To2024 = () => {
     return debounce((newText) => {
       setterFunction(newText);
       localStorage.setItem(localStorageKey, newText);
-    }, 1000);
+    }, 300);
   };
 
   const handleTenerifeClick = () => {
