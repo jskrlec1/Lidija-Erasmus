@@ -19,8 +19,10 @@ function App() {
 
   // Koristite useEffect za izradu Axios zahtjeva nakon što se komponenta montira
   useEffect(() => {
-    // Izradite Axios zahtjev ovdje
-    axios.get("https://api.example.com/some-data")
+    // Izradite Axios zahtjev s vašim URL-om koji ste dostavili
+    const databaseURL = "postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl";
+
+    axios.get(databaseURL)
       .then(response => {
         // Ažurirajte stanje s podacima koje ste dobili iz odgovora
         setData(response.data);
@@ -31,22 +33,25 @@ function App() {
       });
   }, []); // Prazno polje označava da će se useEffect izvršiti samo pri montiranju komponente
 
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<ErasmusAccreditation data={data} />} />
-        <Route path="/2023-2024" element={<Year2023To2024 data={data} />} />
-        <Route path="/2024-2025" element={<Year2024To2025 data={data} />} />
-        <Route path="/2025-2026" element={<Year2025To2026 data={data} />} />
-        <Route path="/2026-2027" element={<Year2026To2027 data={data} />} />
-        <Route path="/tenerife" element={<Tenerife data={data} />} />
-        <Route path="/budimpešta" element={<Budimpešta data={data} />} />
-        <Route path="/rim" element={<Rim data={data} />} />
-        <Route path="/španjolska" element={<Španjolska data={data} />} />
-        <Route path="/italija" element={<Italija data={data} />} />
-      </Routes>
-    </Router>
+  
+ 
+return (
+  <Router>
+    <Routes>
+      <Route path="/" element={<ErasmusAccreditation data={data} />} />
+      <Route path="/2023-2024" element={<Year2023To2024 data={data} />} />
+      <Route path="/2024-2025" element={<Year2024To2025 data={data} />} />
+      <Route path="/2025-2026" element={<Year2025To2026 data={data} />} />
+      <Route path="/2026-2027" element={<Year2026To2027 data={data} />} />
+      <Route path="/tenerife" element={<Tenerife data={data} />} />
+      <Route path="/budimpešta" element={<Budimpešta data={data} />} />
+      <Route path="/rim" element={<Rim data={data} />} />
+      <Route path="/španjolska" element={<Španjolska data={data} />} />
+      <Route path="/italija" element={<Italija data={data} />} />
+    </Routes>
+  </Router>
   );
 }
 
 export default App;
+
