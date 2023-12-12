@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import debounce from "lodash/debounce"; // Uvoz debounce funkcije iz lodash paketa
+import axios from 'axios';
 
 const Year2023To2024 = () => {
   const [jobShadowing, setJobShadowing] = useState("");
@@ -7,20 +9,35 @@ const Year2023To2024 = () => {
   const [diseminacija, setDiseminacija] = useState("");
   const [ostalo, setOstalo] = useState("");
 
-  useEffect(() => {
-    setJobShadowing(localStorage.getItem("jobShadowing2023To2024") || "");
-    setAktivnosti(localStorage.getItem("aktivnosti2023To2024") || "");
-    setDiseminacija(localStorage.getItem("diseminacija2023To2024") || "");
-    setOstalo(localStorage.getItem("ostalo2023To2024") || "");
-  }, []);
+  const navigate = useNavigate();
 
-  const handleTextChange = (setterFunction, localStorageKey) => (event) => {
-    const newText = event.target.value;
-    setterFunction(newText);
-    localStorage.setItem(localStorageKey, newText);
+  // Funkcija za dohvaćanje podataka putem Axiosa
+  const fetchDataFromAPI = () => {
+    axios.get('/api/your-endpoint') // Zamijenite 'your-endpoint' s pravim API endpointom
+      .then((response) => {
+        // Ažurirajte stanje komponente s podacima iz odgovora
+        setJobShadowing(response.data.jobShadowing);
+        setAktivnosti(response.data.aktivnosti);
+        setDiseminacija(response.data.diseminacija);
+        setOstalo(response.data.ostalo);
+      })
+      .catch((error) => {
+        // Tretirajte greške
+        console.error(error);
+      });
   };
 
-  const navigate = useNavigate();
+  // Dohvaćanje podataka iz API-ja kada se komponenta montira
+  useEffect(() => {
+    fetchDataFromAPI();
+  }, []);
+
+  const handleTextChange = (setterFunction, localStorageKey) => {
+    return debounce((newText) => {
+      setterFunction(newText);
+      localStorage.setItem(localStorageKey, newText);
+    }, 1000);
+  };
 
   const handleTenerifeClick = () => {
     navigate("/tenerife");
@@ -60,8 +77,9 @@ const Year2023To2024 = () => {
               >
                 Budimpešta
               </button>
-              <button className="btn btn-primary"
-              onClick={handleRimClick}>Rim</button>
+              <button className="btn btn-primary" onClick={handleRimClick}>
+                Rim
+              </button>
             </td>
           </tr>
           <tr>
@@ -74,8 +92,9 @@ const Year2023To2024 = () => {
               >
                 Španjolska
               </button>
-              <button className="btn btn-primary"
-              onClick={handleItalijaClick}>Italija</button>
+              <button className="btn btn-primary" onClick={handleItalijaClick}>
+                Italija
+              </button>
             </td>
           </tr>
           <tr>
@@ -84,10 +103,11 @@ const Year2023To2024 = () => {
               <textarea
                 className="form-control"
                 value={jobShadowing}
-                onChange={handleTextChange(
-                  setJobShadowing,
-                  "jobShadowing2023To2024"
-                )}
+                onChange={(e) =>
+                  handleTextChange(setJobShadowing, "jobShadowing2023To2024")(
+                    e.target.value
+                  )
+                }
               />
             </td>
           </tr>
@@ -96,12 +116,13 @@ const Year2023To2024 = () => {
             <td>
               <textarea
                 className="form-control"
-                rows="20" 
+                rows="20"
                 value={aktivnosti}
-                onChange={handleTextChange(
-                  setAktivnosti,
-                  "aktivnosti2023To2024"
-                )}
+                onChange={(e) =>
+                  handleTextChange(setAktivnosti, "aktivnosti2023To2024")(
+                    e.target.value
+                  )
+                }
               />
             </td>
           </tr>
@@ -110,12 +131,13 @@ const Year2023To2024 = () => {
             <td>
               <textarea
                 className="form-control"
-                rows="20" 
+                rows="20"
                 value={diseminacija}
-                onChange={handleTextChange(
-                  setDiseminacija,
-                  "diseminacija2023To2024"
-                )}
+                onChange={(e) =>
+                  handleTextChange(setDiseminacija, "diseminacija2023To2024")(
+                    e.target.value
+                  )
+                }
               />
             </td>
           </tr>
@@ -125,7 +147,9 @@ const Year2023To2024 = () => {
               <textarea
                 className="form-control"
                 value={ostalo}
-                onChange={handleTextChange(setOstalo, "ostalo2023To2024")}
+                onChange={(e) =>
+                  handleTextChange(setOstalo, "ostalo2023To2024")(e.target.value)
+                }
               />
             </td>
           </tr>

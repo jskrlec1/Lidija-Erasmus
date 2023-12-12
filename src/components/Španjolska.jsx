@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import debounce from "lodash/debounce";
+import axios from 'axios'; // Uvoz Axiosa
 
 const Španjolska = () => {
-  const [podatci, setPodatci] = useState(localStorage.getItem("španjolskaPodatci") || "");
+  const [podatci, setPodatci] = useState("");
   const initialDokumentacijaState = () => {
     return Array.from({ length: 15 }, (_, index) => {
       const savedData = localStorage.getItem(`španjolskaDokumentacija${index}`);
@@ -11,34 +13,64 @@ const Španjolska = () => {
   const [dokumentacija, setDokumentacija] = useState(initialDokumentacijaState);
 
   useEffect(() => {
-    localStorage.setItem("španjolskaPodatci", podatci);
-  }, [podatci]);
+    // Dohvaćanje podataka iz API-ja kada se komponenta montira
+    fetchDataFromAPI();
+  }, []);
 
-  useEffect(() => {
-    dokumentacija.forEach((item, index) => {
-      localStorage.setItem(`španjolskaDokumentacija${index}`, JSON.stringify(item));
-    });
-  }, [dokumentacija]);
+  // Funkcija za dohvaćanje podataka putem Axiosa
+  const fetchDataFromAPI = () => {
+    axios.get('/api/your-endpoint') // Zamijenite 'your-endpoint' s pravim API endpointom
+      .then((response) => {
+        // Ažurirajte stanje komponente s podacima iz odgovora
+        setPodatci(response.data.podatci);
+        setDokumentacija(response.data.dokumentacija);
+      })
+      .catch((error) => {
+        // Tretirajte greške
+        console.error(error);
+      });
+  };
+
+  // Debounced verzija funkcije za spremanje
+  const debouncedSave = debounce((localStorageKey, value) => {
+    localStorage.setItem(localStorageKey, value);
+  }, 1000);
 
   const handlePodatciChange = (event) => {
-    setPodatci(event.target.value);
+    const newText = event.target.value;
+    setPodatci(newText);
+    debouncedSave("španjolskaPodatci", newText);
   };
 
   const handleDokumentacijaTextChange = (index) => (event) => {
     const newDokumentacija = [...dokumentacija];
-    newDokumentacija[index] = { ...newDokumentacija[index], tekst: event.target.value };
+    newDokumentacija[index] = {
+      ...newDokumentacija[index],
+      tekst: event.target.value,
+    };
     setDokumentacija(newDokumentacija);
+    debouncedSave(
+      `španjolskaDokumentacija${index}`,
+      JSON.stringify(newDokumentacija[index])
+    );
   };
 
   const handleDokumentacijaCheckboxChange = (index) => (event) => {
     const newDokumentacija = [...dokumentacija];
-    newDokumentacija[index] = { ...newDokumentacija[index], checked: event.target.checked };
+    newDokumentacija[index] = {
+      ...newDokumentacija[index],
+      checked: event.target.checked,
+    };
     setDokumentacija(newDokumentacija);
+    debouncedSave(
+      `španjolskaDokumentacija${index}`,
+      JSON.stringify(newDokumentacija[index])
+    );
   };
 
   return (
     <div className="container">
-      <h1 style={{ color: 'blue' }}>Španjolska</h1> 
+      <h1 style={{ color: "blue" }}>Španjolska</h1>
       <table className="table">
         <tbody>
           <tr>
@@ -48,7 +80,7 @@ const Španjolska = () => {
                 className="form-control"
                 value={podatci}
                 onChange={handlePodatciChange}
-                rows="20"  // Postavljanje broja redova na 20
+                rows="20" // Postavljanje broja redova na 20
               />
             </td>
           </tr>
@@ -60,7 +92,9 @@ const Španjolska = () => {
                   className="form-control"
                   value={item.tekst}
                   onChange={handleDokumentacijaTextChange(index)}
-                  style={{ backgroundColor: item.checked ? "lightgreen" : "white" }}
+                  style={{
+                    backgroundColor: item.checked ? "lightgreen" : "white",
+                  }}
                 />
                 <input
                   type="checkbox"
