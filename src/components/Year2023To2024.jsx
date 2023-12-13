@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce"; // Uvoz debounce funkcije iz lodash paketa
+import axios from "axios"; // Uvoz Axios za slanje HTTP zahtjeva
 
 const Year2023To2024 = () => {
   const [jobShadowing, setJobShadowing] = useState("");
@@ -38,12 +39,21 @@ const Year2023To2024 = () => {
     }, 10); // Smanjen debounce delay na 10ms
   };
 
-  // Funkcija za spremanje podataka u Local Storage
-  const saveDataToLocalStorage = () => {
-    localStorage.setItem("jobShadowing2023To2024", jobShadowing);
-    localStorage.setItem("aktivnosti2023To2024", aktivnosti);
-    localStorage.setItem("diseminacija2023To2024", diseminacija);
-    localStorage.setItem("ostalo2023To2024", ostalo);
+  const saveDataToServer = () => {
+    // Slanje podataka na poslužitelj
+    axios
+      .post("/api/save-data", {
+        jobShadowing,
+        aktivnosti,
+        diseminacija,
+        ostalo,
+      })
+      .then((response) => {
+        console.log("Podaci su uspješno spremljeni na poslužitelju.");
+      })
+      .catch((error) => {
+        console.error("Greška pri spremanju podataka:", error);
+      });
   };
 
   // Dohvaćanje podataka iz Local Storage prilikom prvog renderiranja
@@ -106,7 +116,6 @@ const Year2023To2024 = () => {
               <button className="btn btn-primary" onClick={handleRimClick}>
                 Rim
               </button>
-              {/* Dodajte ostale gumbe za mobilnost nastavnika ovdje */}
             </td>
           </tr>
           <tr>
@@ -188,8 +197,8 @@ const Year2023To2024 = () => {
           </tr>
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={saveDataToLocalStorage}>
-        Spremi podatke
+      <button className="btn btn-primary" onClick={saveDataToServer}>
+        Spremi podatke na poslužitelj
       </button>
     </div>
   );
