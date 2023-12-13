@@ -13,8 +13,14 @@ const Italija = () => {
   const [dokumentacija, setDokumentacija] = useState(initialDokumentacijaState);
 
   useEffect(() => {
-    // Dohvaćanje podataka iz API-ja kada se komponenta montira
-    fetchDataFromAPI();
+    // Provera LocalStorage-a za sačuvane podatke u "Podatci" polju
+    const savedPodatci = localStorage.getItem("italijaPodatci");
+    if (savedPodatci) {
+      setPodatci(savedPodatci);
+    } else {
+      // Ako nema sačuvanih podataka, dohvati ih sa servera
+      fetchDataFromAPI();
+    }
   }, []);
 
   // Funkcija za dohvaćanje podataka putem Axiosa

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import debounce from "lodash/debounce";
-import axios from 'axios'; // Uvoz Axiosa
+import axios from "axios"; // Uvoz Axiosa
 
 const Španjolska = () => {
   const [podatci, setPodatci] = useState("");
@@ -13,13 +13,21 @@ const Španjolska = () => {
   const [dokumentacija, setDokumentacija] = useState(initialDokumentacijaState);
 
   useEffect(() => {
-    // Dohvaćanje podataka iz API-ja kada se komponenta montira
-    fetchDataFromAPI();
+    // Provera LocalStorage-a za sačuvane podatke u "Podatci" polju
+    const savedPodatci = localStorage.getItem("španjolskaPodatci");
+    if (savedPodatci) {
+      setPodatci(savedPodatci);
+    } else {
+      // Ako nema sačuvanih podataka, dohvati ih sa servera
+      fetchDataFromAPI();
+    }
   }, []);
-
   // Funkcija za dohvaćanje podataka putem Axiosa
   const fetchDataFromAPI = () => {
-    axios.get("postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl") // Zamijenite 'your-endpoint' s pravim API endpointom
+    axios
+      .get(
+        "postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl"
+      ) // Zamijenite 'your-endpoint' s pravim API endpointom
       .then((response) => {
         // Ažurirajte stanje komponente s podacima iz odgovora
         setPodatci(response.data.podatci);
@@ -80,7 +88,7 @@ const Španjolska = () => {
                 className="form-control"
                 value={podatci}
                 onChange={handlePodatciChange}
-                rows="20" // Postavljanje broja redova na 20
+                rows="20"
               />
             </td>
           </tr>

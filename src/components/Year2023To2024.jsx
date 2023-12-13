@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce"; // Uvoz debounce funkcije iz lodash paketa
-import axios from 'axios';
 
 const Year2023To2024 = () => {
   const [jobShadowing, setJobShadowing] = useState("");
@@ -11,24 +10,24 @@ const Year2023To2024 = () => {
 
   const navigate = useNavigate();
 
-  // Funkcija za dohvaćanje podataka putem Axiosa
   const fetchDataFromAPI = () => {
-    axios.get("postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl") // Zamijenite 'your-endpoint' s pravim API endpointom
-      .then((response) => {
-        // Ažurirajte stanje komponente s podacima iz odgovora
-        setJobShadowing(response.data.jobShadowing);
-        setAktivnosti(response.data.aktivnosti);
-        setDiseminacija(response.data.diseminacija);
-        setOstalo(response.data.ostalo);
-      })
-      .catch((error) => {
-        // Tretirajte greške
-        console.error(error);
-      });
+    // Simulacija podataka s servera
+    const fakeApiResponse = {
+      jobShadowing: "Job Shadowing podaci",
+      aktivnosti: "Aktivnosti podaci",
+      diseminacija: "Diseminacija podaci",
+      ostalo: "Ostalo podaci",
+    };
+
+    // Ažuriranje stanja komponente s podacima
+    setJobShadowing(fakeApiResponse.jobShadowing);
+    setAktivnosti(fakeApiResponse.aktivnosti);
+    setDiseminacija(fakeApiResponse.diseminacija);
+    setOstalo(fakeApiResponse.ostalo);
   };
 
-  // Dohvaćanje podataka iz API-ja kada se komponenta montira
   useEffect(() => {
+    // Dohvaćanje podataka iz API-ja kada se komponenta montira
     fetchDataFromAPI();
   }, []);
 
@@ -36,21 +35,48 @@ const Year2023To2024 = () => {
     return debounce((newText) => {
       setterFunction(newText);
       localStorage.setItem(localStorageKey, newText);
-    }, 300);
+    }, 10); // Smanjen debounce delay na 10ms
   };
+
+  // Funkcija za spremanje podataka u Local Storage
+  const saveDataToLocalStorage = () => {
+    localStorage.setItem("jobShadowing2023To2024", jobShadowing);
+    localStorage.setItem("aktivnosti2023To2024", aktivnosti);
+    localStorage.setItem("diseminacija2023To2024", diseminacija);
+    localStorage.setItem("ostalo2023To2024", ostalo);
+  };
+
+  // Dohvaćanje podataka iz Local Storage prilikom prvog renderiranja
+  useEffect(() => {
+    const savedJobShadowing =
+      localStorage.getItem("jobShadowing2023To2024") || "";
+    const savedAktivnosti = localStorage.getItem("aktivnosti2023To2024") || "";
+    const savedDiseminacija =
+      localStorage.getItem("diseminacija2023To2024") || "";
+    const savedOstalo = localStorage.getItem("ostalo2023To2024") || "";
+
+    setJobShadowing(savedJobShadowing);
+    setAktivnosti(savedAktivnosti);
+    setDiseminacija(savedDiseminacija);
+    setOstalo(savedOstalo);
+  }, []);
 
   const handleTenerifeClick = () => {
     navigate("/tenerife");
   };
-  const handleRimClick = () => {
-    navigate("/rim");
-  };
+
   const handleBudimpeštaClick = () => {
     navigate("/budimpešta");
   };
+
+  const handleRimClick = () => {
+    navigate("/rim");
+  };
+
   const handleŠpanjolskaClick = () => {
     navigate("/španjolska");
   };
+
   const handleItalijaClick = () => {
     navigate("/italija");
   };
@@ -80,6 +106,7 @@ const Year2023To2024 = () => {
               <button className="btn btn-primary" onClick={handleRimClick}>
                 Rim
               </button>
+              {/* Dodajte ostale gumbe za mobilnost nastavnika ovdje */}
             </td>
           </tr>
           <tr>
@@ -104,9 +131,10 @@ const Year2023To2024 = () => {
                 className="form-control"
                 value={jobShadowing}
                 onChange={(e) =>
-                  handleTextChange(setJobShadowing, "jobShadowing2023To2024")(
-                    e.target.value
-                  )
+                  handleTextChange(
+                    setJobShadowing,
+                    "jobShadowing2023To2024"
+                  )(e.target.value)
                 }
               />
             </td>
@@ -119,9 +147,10 @@ const Year2023To2024 = () => {
                 rows="20"
                 value={aktivnosti}
                 onChange={(e) =>
-                  handleTextChange(setAktivnosti, "aktivnosti2023To2024")(
-                    e.target.value
-                  )
+                  handleTextChange(
+                    setAktivnosti,
+                    "aktivnosti2023To2024"
+                  )(e.target.value)
                 }
               />
             </td>
@@ -134,9 +163,10 @@ const Year2023To2024 = () => {
                 rows="20"
                 value={diseminacija}
                 onChange={(e) =>
-                  handleTextChange(setDiseminacija, "diseminacija2023To2024")(
-                    e.target.value
-                  )
+                  handleTextChange(
+                    setDiseminacija,
+                    "diseminacija2023To2024"
+                  )(e.target.value)
                 }
               />
             </td>
@@ -148,13 +178,19 @@ const Year2023To2024 = () => {
                 className="form-control"
                 value={ostalo}
                 onChange={(e) =>
-                  handleTextChange(setOstalo, "ostalo2023To2024")(e.target.value)
+                  handleTextChange(
+                    setOstalo,
+                    "ostalo2023To2024"
+                  )(e.target.value)
                 }
               />
             </td>
           </tr>
         </tbody>
       </table>
+      <button className="btn btn-primary" onClick={saveDataToLocalStorage}>
+        Spremi podatke
+      </button>
     </div>
   );
 };
