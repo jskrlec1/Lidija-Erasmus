@@ -11,37 +11,15 @@ import Budimpešta from "./components/Budimpešta";
 import Rim from "./components/Rim";
 import Španjolska from "./components/Španjolska";
 import Italija from "./components/Italija";
-//import { Pool } from 'pg';
-import { polyfill } from 'es6-promise'; // Dodali smo polyfill za Promise
+
+
 import 'es6-promise/auto';
 
 function App() {
   // Definirajte stanje za podatke koje ćete dohvatiti s bazom podataka
   const [data, setData] = useState([]);
 
-  // useEffect(() => {
-  //   // Postavite konfiguraciju za povezivanje sa bazom podataka
-  //   const pool = new Pool({
-  //     host: 'ec2-3-232-218-211.compute-1.amazonaws.com',
-  //     database: 'de7qfcf7mujcbl',
-  //     user: 'lwgxcprfmhnbvu',
-  //     password: 'ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b',
-  //     port: 5432,
-  //     ssl: {
-  //       rejectUnauthorized: false, // Omogućite SSL
-  //     },
-  //   });
-
-  //   // Izvršite SQL upit za dohvaćanje podataka iz baze podataka
-  //   pool.query('SELECT * FROM tvoja_tabela') // Zamijenite 'tvoja_tabela' sa stvarnim imenom vaše tabele
-  //     .then((result) => {
-  //       // Ažurirajte stanje s podacima koje ste dobili iz baze
-  //       setData(result.rows);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Greška pri dohvaćanju podataka:', error);
-  //     });
-  // }, []);
+ 
 
   return (
     <Router>
