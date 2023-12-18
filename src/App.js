@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import ErasmusAccreditation from "./components/ErasmusAccreditation";
@@ -13,11 +13,11 @@ import Španjolska from "./components/Španjolska";
 import Italija from "./components/Italija";
 
 
-import 'es6-promise/auto';
+
 
 function App() {
   // Definirajte stanje za podatke koje ćete dohvatiti s bazom podataka
-  const [data, setData] = useState([]);
+  const [data] = useState([]);
 
  
 
