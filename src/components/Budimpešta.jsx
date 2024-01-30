@@ -1,53 +1,47 @@
-import React, { useState, useEffect } from "react";
-import debounce from "lodash/debounce";
-import axios from "axios"; // Uvoz Axiosa
+import React, { useEffect, useState } from "react";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Budimpešta = () => {
   const [podatci, setPodatci] = useState("");
-  const initialDokumentacijaState = () => {
-    return Array.from({ length: 15 }, (_, index) => {
-      const savedData = localStorage.getItem(`budimpeštaDokumentacija${index}`);
-      return savedData ? JSON.parse(savedData) : { tekst: "", checked: false };
-    });
+  const [dokumentacija, setDokumentacija] = useState(Array.from({ length: 15 }, () => ({ tekst: "", checked: false })));
+  const docRef = doc(db, "budimpešta", "uniqueDocumentId"); // Fiksni ID za dokument
+
+  const fetchDataFromAPI = async () => {
+    try {
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setPodatci(data.podatci);
+        setDokumentacija(data.dokumentacija);
+      } else {
+        console.log("Nema pronađenih podataka!");
+      }
+    } catch (error) {
+      console.error("Greška pri dohvaćanju podataka:", error);
+    }
   };
-  const [dokumentacija, setDokumentacija] = useState(initialDokumentacijaState);
 
   useEffect(() => {
-    // Provera LocalStorage-a za sačuvane podatke u "Podatci" polju
-    const savedPodatci = localStorage.getItem("budimpeštaPodatci");
-    if (savedPodatci) {
-      setPodatci(savedPodatci);
-    } else {
-      // Ako nema sačuvanih podataka, dohvati ih sa servera
-      fetchDataFromAPI();
-    }
+    fetchDataFromAPI();
   }, []);
-  // Funkcija za dohvaćanje podataka putem Axiosa
-  const fetchDataFromAPI = () => {
-    axios
-      .get(
-        
-      ) 
-      .then((response) => {
-        // Ažurirajte stanje komponente s podacima iz odgovora
-        setPodatci(response.data.podatci);
-        setDokumentacija(response.data.dokumentacija);
-      })
-      .catch((error) => {
-        // Tretirajte greške
-        console.error(error);
-      });
-  };
 
-  // Debounced verzija funkcije za spremanje
-  const debouncedSave = debounce((localStorageKey, value) => {
-    localStorage.setItem(localStorageKey, value);
-  }, 300);
+  const saveDataToServer = async () => {
+    try {
+      await setDoc(docRef, {
+        podatci,
+        dokumentacija,
+      });
+      console.log("Podaci su uspješno spremljeni u Firestore.");
+    } catch (error) {
+      console.error("Greška pri spremanju podataka u Firestore:", error);
+    }
+  };
 
   const handlePodatciChange = (event) => {
     const newText = event.target.value;
     setPodatci(newText);
-    debouncedSave("budimpeštaPodatci", newText);
   };
 
   const handleDokumentacijaTextChange = (index) => (event) => {
@@ -57,10 +51,6 @@ const Budimpešta = () => {
       tekst: event.target.value,
     };
     setDokumentacija(newDokumentacija);
-    debouncedSave(
-      `budimpeštaDokumentacija${index}`,
-      JSON.stringify(newDokumentacija[index])
-    );
   };
 
   const handleDokumentacijaCheckboxChange = (index) => (event) => {
@@ -70,10 +60,6 @@ const Budimpešta = () => {
       checked: event.target.checked,
     };
     setDokumentacija(newDokumentacija);
-    debouncedSave(
-      `budimpeštaDokumentacija${index}`,
-      JSON.stringify(newDokumentacija[index])
-    );
   };
 
   return (
@@ -88,7 +74,7 @@ const Budimpešta = () => {
                 className="form-control"
                 value={podatci}
                 onChange={handlePodatciChange}
-                rows="20" // Postavljanje broja redova na 20
+                rows="20"
               />
             </td>
           </tr>
@@ -100,6 +86,7 @@ const Budimpešta = () => {
                   className="form-control"
                   value={item.tekst}
                   onChange={handleDokumentacijaTextChange(index)}
+                  rows="5"
                   style={{
                     backgroundColor: item.checked ? "lightgreen" : "white",
                   }}
@@ -115,6 +102,7 @@ const Budimpešta = () => {
           ))}
         </tbody>
       </table>
+      <button className="btn btn-primary" onClick={saveDataToServer}>Spremi podatke na poslužitelj</button>
     </div>
   );
 };

@@ -1,54 +1,49 @@
-import React, { useState, useEffect } from "react";
-import debounce from "lodash/debounce";
-import axios from "axios"; // Uvoz Axiosa
+import React, { useEffect, useState } from "react";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Rim = () => {
   const [podatci, setPodatci] = useState("");
-  const initialDokumentacijaState = () => {
-    return Array.from({ length: 15 }, (_, index) => {
-      const savedData = localStorage.getItem(`rimDokumentacija${index}`);
-      return savedData ? JSON.parse(savedData) : { tekst: "", checked: false };
-    });
+  const [dokumentacija, setDokumentacija] = useState(
+    Array.from({ length: 15 }, () => ({ tekst: "", checked: false }))
+  );
+  const docRef = doc(db, "rim", "uniqueDocumentId"); // Fiksni ID za dokument
+
+  const fetchDataFromAPI = async () => {
+    try {
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setPodatci(data.podatci);
+        setDokumentacija(data.dokumentacija);
+      } else {
+        console.log("Nema pronađenih podataka!");
+      }
+    } catch (error) {
+      console.error("Greška pri dohvaćanju podataka:", error);
+    }
   };
-  const [dokumentacija, setDokumentacija] = useState(initialDokumentacijaState);
 
   useEffect(() => {
-    // Provera LocalStorage-a za sačuvane podatke u "Podatci" polju
-    const savedPodatci = localStorage.getItem("rimPodatci");
-    if (savedPodatci) {
-      setPodatci(savedPodatci);
-    } else {
-      // Ako nema sačuvanih podataka, dohvati ih sa servera
-      fetchDataFromAPI();
-    }
+    fetchDataFromAPI();
   }, []);
 
-  // Funkcija za dohvaćanje podataka putem Axiosa
-  const fetchDataFromAPI = () => {
-    axios
-      .get(
-        "postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl"
-      ) // Zamijenite 'your-endpoint' s pravim API endpointom
-      .then((response) => {
-        // Ažurirajte stanje komponente s podacima iz odgovora
-        setPodatci(response.data.podatci);
-        setDokumentacija(response.data.dokumentacija);
-      })
-      .catch((error) => {
-        // Tretirajte greške
-        console.error(error);
+  const saveDataToServer = async () => {
+    try {
+      await setDoc(docRef, {
+        podatci,
+        dokumentacija,
       });
+      console.log("Podaci su uspješno spremljeni u Firestore.");
+    } catch (error) {
+      console.error("Greška pri spremanju podataka u Firestore:", error);
+    }
   };
-
-  // Debounced verzija funkcije za spremanje
-  const debouncedSave = debounce((localStorageKey, value) => {
-    localStorage.setItem(localStorageKey, value);
-  }, 300);
 
   const handlePodatciChange = (event) => {
     const newText = event.target.value;
     setPodatci(newText);
-    debouncedSave("rimPodatci", newText);
   };
 
   const handleDokumentacijaTextChange = (index) => (event) => {
@@ -58,10 +53,6 @@ const Rim = () => {
       tekst: event.target.value,
     };
     setDokumentacija(newDokumentacija);
-    debouncedSave(
-      `rimDokumentacija${index}`,
-      JSON.stringify(newDokumentacija[index])
-    );
   };
 
   const handleDokumentacijaCheckboxChange = (index) => (event) => {
@@ -71,10 +62,6 @@ const Rim = () => {
       checked: event.target.checked,
     };
     setDokumentacija(newDokumentacija);
-    debouncedSave(
-      `rimDokumentacija${index}`,
-      JSON.stringify(newDokumentacija[index])
-    );
   };
 
   return (
@@ -89,7 +76,7 @@ const Rim = () => {
                 className="form-control"
                 value={podatci}
                 onChange={handlePodatciChange}
-                rows="20" // Postavljanje broja redova na 20
+                rows="20"
               />
             </td>
           </tr>
@@ -101,6 +88,7 @@ const Rim = () => {
                   className="form-control"
                   value={item.tekst}
                   onChange={handleDokumentacijaTextChange(index)}
+                  rows="5"
                   style={{
                     backgroundColor: item.checked ? "lightgreen" : "white",
                   }}
@@ -116,6 +104,9 @@ const Rim = () => {
           ))}
         </tbody>
       </table>
+      <button className="btn btn-primary" onClick={saveDataToServer}>
+        Spremi podatke na poslužitelj
+      </button>
     </div>
   );
 };
