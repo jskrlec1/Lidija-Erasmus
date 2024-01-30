@@ -26,8 +26,8 @@ const Budimpešta = () => {
   const fetchDataFromAPI = () => {
     axios
       .get(
-        "postgres://lwgxcprfmhnbvu:ce5f1bd0c0be2c340304a7cc4cc1ac660daef0f08851f05b510e4dfe4267c58b@ec2-3-232-218-211.compute-1.amazonaws.com:5432/de7qfcf7mujcbl"
-      ) // Zamijenite 'your-endpoint' s pravim API endpointom
+        
+      ) 
       .then((response) => {
         // Ažurirajte stanje komponente s podacima iz odgovora
         setPodatci(response.data.podatci);
