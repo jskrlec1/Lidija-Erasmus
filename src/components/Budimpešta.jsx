@@ -4,7 +4,9 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Budimpešta = () => {
   const [podatci, setPodatci] = useState("");
-  const [dokumentacija, setDokumentacija] = useState(Array.from({ length: 15 }, () => ({ tekst: "", checked: false })));
+  const [dokumentacija, setDokumentacija] = useState(
+    Array.from({ length: 15 }, () => ({ tekst: "", checked: false }))
+  );
   const docRef = doc(db, "budimpešta", "uniqueDocumentId"); // Fiksni ID za dokument
 
   const fetchDataFromAPI = async () => {
@@ -25,6 +27,7 @@ const Budimpešta = () => {
 
   useEffect(() => {
     fetchDataFromAPI();
+    // eslint-disable-next-line
   }, []);
 
   const saveDataToServer = async () => {
@@ -102,7 +105,9 @@ const Budimpešta = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={saveDataToServer}>Spremi podatke na poslužitelj</button>
+      <button className="btn btn-primary" onClick={saveDataToServer}>
+        Spremi podatke na poslužitelj
+      </button>
     </div>
   );
 };

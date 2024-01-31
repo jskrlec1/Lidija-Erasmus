@@ -27,6 +27,7 @@ const Rim = () => {
 
   useEffect(() => {
     fetchDataFromAPI();
+    // eslint-disable-next-line
   }, []);
 
   const saveDataToServer = async () => {

@@ -4,7 +4,9 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Tenerife = () => {
   const [podatci, setPodatci] = useState("");
-  const [dokumentacija, setDokumentacija] = useState(Array.from({ length: 15 }, () => ({ tekst: "", checked: false })));
+  const [dokumentacija, setDokumentacija] = useState(
+    Array.from({ length: 15 }, () => ({ tekst: "", checked: false }))
+  );
   const docRef = doc(db, "tenerife", "uniqueDocumentId"); // Fiksni ID za dokument
 
   const fetchDataFromAPI = async () => {
@@ -25,6 +27,7 @@ const Tenerife = () => {
 
   useEffect(() => {
     fetchDataFromAPI();
+    // eslint-disable-next-line
   }, []);
 
   const saveDataToServer = async () => {
@@ -102,7 +105,9 @@ const Tenerife = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={saveDataToServer}>Spremi podatke na poslužitelj</button>
+      <button className="btn btn-primary" onClick={saveDataToServer}>
+        Spremi podatke na poslužitelj
+      </button>
     </div>
   );
 };

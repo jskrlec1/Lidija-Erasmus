@@ -32,6 +32,7 @@ const Year2023To2024 = () => {
 
   useEffect(() => {
     fetchDataFromAPI();
+    // eslint-disable-next-line
   }, []);
 
   const saveDataToServer = async () => {
