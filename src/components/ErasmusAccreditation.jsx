@@ -33,27 +33,51 @@ const ErasmusAccreditation = () => {
         alt="Erasmus Akreditacija Logo"
         style={{ maxWidth: "100%", height: "auto" }}
       />
-      {!isAuthenticated && (
-        <div>
-          <input
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            onKeyPress={handleKeyPress}
-            autoFocus
-            className="form-control form-control-lg mb-4"
-            placeholder=""
-            style={{ width: 'auto', maxWidth: '100%', display: 'inline-block' }}
-            />
-          <br />
-          <button
-            onClick={checkPassword}
-            className="btn btn-primary btn-lg rounded-pill"
-          >
-            Unesi lozinku
-          </button>
-        </div>
-      )}
+     
+{!isAuthenticated && (
+  <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      checkPassword();
+    }}
+  >
+    <div>
+      <input
+        type="text"
+        autoComplete="username"
+        style={{ display: "none" }}
+        value="uniqueUsername" // Ovo je vrijednost koja se ne mijenja
+        readOnly // Dodano kako bi se izbjeglo upozorenje
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={handlePasswordChange}
+        onKeyPress={handleKeyPress}
+        autoFocus
+        className="form-control form-control-lg mb-4"
+        placeholder=""
+        style={{
+          width: "auto",
+          maxWidth: "100%",
+          display: "inline-block",
+        }}
+        autoComplete="current-password"
+      />
+      <br />
+      <button
+        type="submit"
+        className="btn btn-primary btn-lg rounded-pill"
+      >
+        Unesi lozinku
+      </button>
+    </div>
+  </form>
+)}
+
+
+
+
 
       {isAuthenticated && (
         <div>
