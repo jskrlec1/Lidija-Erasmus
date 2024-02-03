@@ -46,7 +46,7 @@ const ErasmusAccreditation = () => {
         type="text"
         autoComplete="username"
         style={{ display: "none" }}
-        value="uniqueUsername" // Ovo je vrijednost koja se ne mijenja
+        value="uniqueUsername" // Vrijednost koja se ne mijenja
         readOnly // Dodano kako bi se izbjeglo upozorenje
       />
       <input
